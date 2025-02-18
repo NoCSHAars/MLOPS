@@ -36,3 +36,6 @@ attr = "mlops.__version__"
 [tool.setuptools.packages.find]
 where = [ "src",]
 namespaces = false
+
+[tool.kedro_telemetry]
+project_id = "3a2c9104909e4feaa7630ab5a1dbd386"
