@@ -9,7 +9,7 @@ def encode_features(dataset: pd.DataFrame) -> pd.DataFrame:
     """
     Encode features of data file.
     """
-    features = dataset.drop(["ID"], axis=1).copy()
+    features = dataset.drop(["Id"], axis=1).copy()
 
     encoders = []
     for label in ["category", "sub_category", "brand"]:
@@ -21,4 +21,3 @@ def encode_features(dataset: pd.DataFrame) -> pd.DataFrame:
 
     features["weekday"] = features["weekday"].astype(int)
     return dict(features=features, transform_pipeline=encoders)
-    
