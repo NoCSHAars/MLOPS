@@ -19,7 +19,7 @@ MODELS = [
         "name": "LightGBM",
         "class": LGBMClassifier,
         "params": {
-            "objective": "binary",
+            "objective": "multiclass",
             "verbose": -1,
             "learning_rate": hp.uniform("learning_rate", 0.001, 1),
             "num_iterations": hp.quniform("num_iterations", 100, 1000, 20),
@@ -114,7 +114,7 @@ def auto_ml(
             model_specs["class"],
             dataset=(X, y),
             search_space=model_specs["params"],
-            metric=lambda x, y: -f1_score(x, y),
+            metric=lambda x, y: -f1_score(x, y, average="weighted"),
             max_evals=max_evals
         )
         print("done")
