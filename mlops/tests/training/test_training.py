@@ -4,7 +4,7 @@ import pandas as pd
 from unittest.mock import patch, MagicMock
 from sklearn.metrics import f1_score
 from lightgbm import LGBMClassifier
-from src.mlops import (
+from mlops.src.mlops.pipelines.training.nodes import (
     train_model,
     optimize_hyp,
     auto_ml,
@@ -37,7 +37,7 @@ def test_optimize_hyp(dummy_data):
     X_train, y_train, _, _ = dummy_data
     search_space = {"learning_rate": 0.1, "num_leaves": 31}
 
-    with patch("src.mlops.train_model") as mock_train:
+    with patch("mlops.src.mlops.pipelines.training.nodes.train_model") as mock_train:
         mock_train.return_value = MagicMock(
             predict=lambda x: np.random.randint(0, 2, len(x))
         )
@@ -52,9 +52,10 @@ def test_auto_ml(dummy_data):
     """Tests auto_ml function."""
     X_train, y_train, X_test, y_test = dummy_data
 
-    with patch("src.mlops.optimize_hyp", return_value={"learning_rate": 0.1}), patch(
-        "src.mlops.train_model"
-    ) as mock_train:
+    with patch(
+        "mlops.src.mlops.pipelines.training.nodes.optimize_hyp",
+        return_value={"learning_rate": 0.1},
+    ), patch("mlops.src.mlops.pipelines.training.nodes.train_model") as mock_train:
         mock_model = MagicMock()
         mock_model.predict.return_value = np.random.randint(0, 2, len(y_test))
         mock_train.return_value = mock_model
