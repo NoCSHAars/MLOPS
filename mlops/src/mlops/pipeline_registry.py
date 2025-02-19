@@ -5,6 +5,7 @@ from mlops.pipelines.training import pipeline as training_pipeline
 from mlops.pipelines.processing import pipeline as processing_pipeline
 from mlops.pipelines.loading import pipeline as loading_pipeline
 
+
 def register_pipelines() -> dict[str, Pipeline]:
     """Register the project's pipeline.
 
@@ -17,7 +18,8 @@ def register_pipelines() -> dict[str, Pipeline]:
     p_loading = loading_pipeline.create_pipeline()
 
     return {
+        "global": Pipeline([p_loading, p_processing, p_training]),
         "loading": p_loading,
         "processing": p_processing,
-        "training": p_training
+        "training": p_training,
     }
