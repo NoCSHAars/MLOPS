@@ -9,6 +9,7 @@ from hyperopt import hp, tpe, fmin, Trials
 import warnings
 import os
 import mlflow
+from matplotlib import pyplot as plt
 
 warnings.filterwarnings("ignore")
 
@@ -128,3 +129,19 @@ def auto_ml(
         )
 
     return {"model": min(opt_models, key=lambda x: x["rmse"])["model"]}
+
+
+def save_pred_vs_actual(X, y, model):
+    plt.figure(figsize=(16, 11))
+    y_pred = model.predict(X)
+
+    plt.scatter(y, y_pred, alpha=0.5)
+    plt.plot(
+        [y.min(), y.max()], [y.min(), y.max()], color="red", linestyle="--"
+    )  # Ligne parfaite
+    plt.xlabel("Valeurs Réelles (y)", fontsize=14)
+    plt.ylabel("Prédictions (y_pred)", fontsize=14)
+    plt.title("Valeurs Réelles vs. Prédictions", fontsize=16)
+
+    plt.savefig(os.path.expanduser("data/08_reporting/pred_vs_actual.png"))
+    plt.close()
