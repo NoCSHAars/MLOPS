@@ -21,6 +21,7 @@ data/**
 !data/01_raw/companies.csv
 !data/01_raw/reviews.csv
 !data/01_raw/shuttles.xlsx
+!data/03_primary/primary.csv
 
 # ignore kedro-viz metadata
 .viz
