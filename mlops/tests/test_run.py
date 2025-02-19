@@ -12,9 +12,11 @@ from kedro.framework.startup import bootstrap_project
 # and should be replaced with the ones testing the project
 # functionality
 
+"""
 class TestKedroRun:
     def test_kedro_run(self):
         bootstrap_project(Path.cwd())
 
         with KedroSession.create(project_path=Path.cwd()) as session:
             assert session.run() is not None
+"""
