@@ -1,15 +1,20 @@
 """Project pipelines."""
 
-from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
-
+from mlops.pipelines.training import pipeline as training_pipeline
+from mlops.pipelines.processing import pipeline as processing_pipeline
 
 def register_pipelines() -> dict[str, Pipeline]:
-    """Register the project's pipelines.
+    """Register the project's pipeline.
 
     Returns:
-        A mapping from pipeline names to ``Pipeline`` objects.
+        A mapping from a pipeline name to a ``Pipeline`` object.
+
     """
-    pipelines = find_pipelines()
-    pipelines["__default__"] = sum(pipelines.values())
-    return pipelines
+    p_processing = processing_pipeline.create_pipeline()
+    p_training = training_pipeline.create_pipeline()
+
+    return {
+        "processing": p_processing,
+        "training": p_training
+    }
