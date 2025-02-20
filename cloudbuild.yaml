@@ -20,7 +20,7 @@ steps:
     source .venv/bin/activate &&
     pytest .
 
-logs_bucket: gs://mlops/logs_build_cloud_build
+logs_bucket: gs://housing-price-predict/logs_build_cloud_build
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/cloud-build/versions/1
