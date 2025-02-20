@@ -23,9 +23,9 @@ spec:
         - name: ENV
           value: "staging"
         - name: MLFLOW_SERVER
-          value: "http://34.107.0.37/"
+          value: "http://35.189.225.250/"
         - name: MLFLOW_REGISTRY_NAME
-          value: "housing_predict"
+          value: "housing_estimation"
         ports:
         - containerPort: 80
         resources:
