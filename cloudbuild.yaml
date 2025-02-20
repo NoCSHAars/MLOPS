@@ -37,6 +37,10 @@ steps:
   id: CD
   entrypoint: /bin/bash
   secretEnv: ['SERVICE_ACCOUNT']
+  env:
+    - PROJECT_ID=$PROJECT_ID  # Ensure this environment variable is correctly set in this step
+    - ENV=$BRANCH_NAME
+    - MLFLOW_SERVER=$_MLFLOW_SERVER
   args:
   - -c
   - |
@@ -60,10 +64,6 @@ steps:
 
     # Run the rest of your build commands
     chmod a+x install.sh && ./install.sh && source .venv/bin/activate && cd mlops && kedro run
-
-env:
-  - 'ENV=$BRANCH_NAME'
-  - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
 
 logs_bucket: gs://housing-price-predict/logs_build_cloud_build
 
