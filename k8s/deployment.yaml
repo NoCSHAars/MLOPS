@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: pod-housing-predict
-        image: gcr.io/enhanced-kiln-451309-q8/housing-predict-api
+        image: gcr.io/enhanced-kiln-451309-q8/purchase-predict-api
         env:
         - name: PORT
           value: "80"
