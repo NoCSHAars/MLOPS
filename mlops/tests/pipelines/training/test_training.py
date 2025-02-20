@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from unittest.mock import patch, MagicMock
 from sklearn.metrics import f1_score
 from lightgbm import LGBMClassifier
@@ -8,15 +7,6 @@ from mlops.src.mlops.pipelines.training.nodes import (
     optimize_hyp,
     auto_ml,
 )
-
-
-def dummy_data():
-    """Generates dummy dataset for testing."""
-    X_train = pd.DataFrame(np.random.rand(100, 5), columns=[f"f{i}" for i in range(5)])
-    y_train = pd.Series(np.random.randint(0, 2, 100))
-    X_test = pd.DataFrame(np.random.rand(20, 5), columns=[f"f{i}" for i in range(5)])
-    y_test = pd.Series(np.random.randint(0, 2, 20))
-    return X_train, y_train, X_test, y_test
 
 
 def test_train_model(dummy_data):
