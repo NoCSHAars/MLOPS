@@ -42,7 +42,7 @@ steps:
   - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   id: API Deploy
-  secretEnv: ['GITHUB_TOKEN']
+  secretEnv: ['GIT_TOKEN']
   entrypoint: 'bash'
   args:
   - '-c'
