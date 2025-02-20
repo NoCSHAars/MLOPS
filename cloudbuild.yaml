@@ -18,7 +18,7 @@ steps:
     chmod a+x install.sh &&
     ./install.sh &&
     source .venv/bin/activate &&
-    pytest .
+    pytest ./mlops
 
 logs_bucket: gs://housing-price-predict/logs_build_cloud_build
 availableSecrets:
