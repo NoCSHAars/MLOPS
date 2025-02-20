@@ -1,6 +1,6 @@
 # Liste des Cloud Builders : https://console.cloud.google.com/gcr/images/cloud-builders/GLOBAL
 steps:
-- name: "mlops/uv-gcp-cloud-build"
+- name: "noobzik/uv-gcp-cloud-build"
   id: CI
   entrypoint: /bin/bash
   secretEnv: ['SERVICE_ACCOUNT']
