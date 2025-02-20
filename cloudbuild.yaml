@@ -32,7 +32,7 @@ steps:
       exit 1
     fi
     gcloud config set project "$PROJECT_ID"
-    chmod a+x install.sh && ./install.sh && source .venv/bin/activate && kedro run
+    chmod a+x install.sh && ./install.sh && source .venv/bin/activate && cd mlops && kedro run
   env:
   - 'ENV=$BRANCH_NAME'
   - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
