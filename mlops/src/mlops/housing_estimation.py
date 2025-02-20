@@ -11,10 +11,10 @@ from mlflow.tracking import MlflowClient
 
 matplotlib.use("Agg")
 
-X_train = pd.read_csv("mlops/data/05_model_input/X_train.csv")
-X_test = pd.read_csv("mlops/data/05_model_input/X_test.csv")
-y_train = pd.read_csv("mlops/data/05_model_input/y_train.csv")
-y_test = pd.read_csv("mlops/data/05_model_input/y_test.csv")
+X_train = pd.read_csv("data/05_model_input/X_train.csv")
+X_test = pd.read_csv("data/05_model_input/X_test.csv")
+y_train = pd.read_csv("data/05_model_input/y_train.csv")
+y_test = pd.read_csv("data/05_model_input/y_test.csv")
 
 # Hyper-paramètres des modèles
 hyp_params = {

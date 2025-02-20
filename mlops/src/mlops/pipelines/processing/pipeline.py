@@ -9,7 +9,10 @@ def create_pipeline(**kwargs):
             node(
                 encode_features,
                 "primary",
-                dict(features="dataset", transform_pipeline="transform_pipeline"),
+                dict(
+                    features="dataset",
+                    transform_pipeline="transform_pipeline"
+                )
             ),
             node(
                 split_dataset,
@@ -19,7 +22,7 @@ def create_pipeline(**kwargs):
                     y_train="y_train",
                     X_test="X_test",
                     y_test="y_test",
-                ),
+                )
             ),
         ]
     )
