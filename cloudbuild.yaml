@@ -1,72 +1,46 @@
+# Liste des Cloud Builders : https://console.cloud.google.com/gcr/images/cloud-builders/GLOBAL
 steps:
 - name: "noobzik/uv-gcp-cloud-build"
   id: CI
   entrypoint: /bin/bash
-  secretEnv: ['SERVICE_ACCOUNT']  # Ensures that the secret is available as an environment variable
+  secretEnv: ['SERVICE_ACCOUNT']
   env:
     - PROJECT_ID=$PROJECT_ID
   args:
   - -c
   - |
-    # Save the secret value into a JSON file in the /tmp directory (Cloud Build will have access to /tmp)
-    echo "$SERVICE_ACCOUNT" > /tmp/service_account.json
-
-    # Set GOOGLE_APPLICATION_CREDENTIALS to point to the downloaded service account file
-    export GOOGLE_APPLICATION_CREDENTIALS="/tmp/service_account.json"
-
-    # Check that the service account file exists and that the environment variable is set correctly
-    if [ ! -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-      echo "ERROR: Service account file not found at $GOOGLE_APPLICATION_CREDENTIALS"
+    echo "$$SERVICE_ACCOUNT" > service_account.json
+    if ! gcloud auth activate-service-account --key-file=service_account.json; then
+      echo "ERROR: gcloud authenfication failed!"
       exit 1
     fi
-
-    # Authenticate with Google Cloud using the service account
-    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-
-    # Set the project
     gcloud config set project "$PROJECT_ID"
-
-    # Run the rest of your build commands
     chmod a+x install.sh &&
     ./install.sh &&
     source .venv/bin/activate &&
     pytest ./mlops
-
 - name: "noobzik/uv-gcp-cloud-build"
   id: CD
   entrypoint: /bin/bash
   secretEnv: ['SERVICE_ACCOUNT']
-  env:
-    - PROJECT_ID=$PROJECT_ID  # Ensure this environment variable is correctly set in this step
-    - ENV=$BRANCH_NAME
-    - MLFLOW_SERVER=$_MLFLOW_SERVER
   args:
   - -c
   - |
-    # Save the secret value into a JSON file in the /tmp directory
-    echo "$SERVICE_ACCOUNT" > /tmp/service_account.json
-
-    # Set GOOGLE_APPLICATION_CREDENTIALS to point to the downloaded service account file
-    export GOOGLE_APPLICATION_CREDENTIALS="/tmp/service_account.json"
-
-    # Check that the service account file exists and that the environment variable is set correctly
-    if [ ! -f "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-      echo "ERROR: Service account file not found at $GOOGLE_APPLICATION_CREDENTIALS"
+    echo "$$SERVICE_ACCOUNT" > service_account.json
+    if ! gcloud auth activate-service-account --key-file=service_account.json; then
+      echo "ERROR: gcloud authenfication failed!"
       exit 1
     fi
-
-    # Authenticate with Google Cloud using the service account
-    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-
-    # Set the project
     gcloud config set project "$PROJECT_ID"
-
-    # Run the rest of your build commands
     chmod a+x install.sh && ./install.sh && source .venv/bin/activate && cd mlops && kedro run
+  env:
+  - 'ENV=$BRANCH_NAME'
+  - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
 
 logs_bucket: gs://housing-price-predict/logs_build_cloud_build
-
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/GCP_SERVICE_ACCOUNT/versions/1
     env: SERVICE_ACCOUNT
+#  - versionName: projects/$PROJECT_ID/secrets/GIT_TOKEN/versions/latest
+#    env: GIT_TOKEN
