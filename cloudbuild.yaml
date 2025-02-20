@@ -19,6 +19,23 @@ steps:
     ./install.sh &&
     source .venv/bin/activate &&
     pytest ./mlops
+- name: "noobzik/uv-gcp-cloud-build"
+  id: CD
+  entrypoint: /bin/bash
+  secretEnv: ['SERVICE_ACCOUNT']
+  args:
+  - -c
+  - |
+    echo "$$SERVICE_ACCOUNT" > service_account.json
+    if ! gcloud auth activate-service-account --key-file=service_account.json; then
+      echo "ERROR: gcloud authenfication failed!"
+      exit 1
+    fi
+    gcloud config set project "$PROJECT_ID"
+    chmod a+x install.sh && ./install.sh && source .venv/bin/activate && kedro run
+  env:
+  - 'ENV=$BRANCH_NAME'
+  - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
 
 logs_bucket: gs://housing-price-predict/logs_build_cloud_build
 availableSecrets:
