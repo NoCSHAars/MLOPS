@@ -4,9 +4,10 @@ from kedro.pipeline import Pipeline
 from mlops.pipelines.training import pipeline as training_pipeline
 from mlops.pipelines.processing import pipeline as processing_pipeline
 from mlops.pipelines.loading import pipeline as loading_pipeline
+from typing import Dict
 
 
-def register_pipelines() -> dict[str, Pipeline]:
+def register_pipelines() -> Dict[str, Pipeline]:
     """Register the project's pipeline.
 
     Returns:
