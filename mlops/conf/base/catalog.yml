@@ -1,4 +1,6 @@
-# Here you can define all your data sets by using simple YAML syntax.
+transform_pipeline:
+  type: pickle.PickleDataset
+  filepath: data/04_feature/transform_pipeline.pkl# Here you can define all your data sets by using simple YAML syntax.
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://kedro.readthedocs.io/en/stable/05_data/01_data_catalog.html
@@ -31,5 +33,6 @@ model:
   type: pickle.PickleDataset
   filepath: data/06_models/model.pkl
 
-mlflow_run_id:
+mlflow_run_id : 
   type: MemoryDataset
+  

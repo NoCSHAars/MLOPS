@@ -5,36 +5,17 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 
-def test_encode_features():
-
-    data = {
-        "Id": [1, 2, 3],
-        "LotShape": ["Reg", "IR1", "Reg"],
-        "LotFrontage": [65, 80, 68],
-        "LotArea": [8450, 9600, 11250],
-        "LotConfig": ["Inside", "FR2", "Corner"],
-        "SalePrice": [208500, 181500, 223500],
-    }
-    df = pd.DataFrame(data)
-
-    result = encode_features(df)
-    encoded_df = result["features"]
-    encoders = result["transform_pipeline"]
-
-    assert "Id" not in encoded_df.columns
-
-    assert encoded_df["LotShape"].dtype == np.int64
-    assert encoded_df["LotConfig"].dtype == np.int64
-
-    assert "LotConfig" in encoders
-    assert isinstance(encoders["LotShape"], LabelEncoder)
-
-    assert "LotShape" in encoders
-    assert isinstance(encoders["LotConfig"], LabelEncoder)
-
-    assert encoded_df["LotFrontage"].equals(df["LotFrontage"])
-    assert encoded_df["LotArea"].equals(df["LotArea"])
-
+def test_encode_features(dataset_not_encoded):
+    df = encode_features(dataset_not_encoded)["features"]
+    # Checking column 'purchased' that all values are either 0 or 1
+    assert df["purchased"].isin([0, 1]).all()
+    # Checking that all columns are numeric
+    for col in df.columns:
+        assert pd.api.types.is_numeric_dtype(df.dtypes[col])
+    # Checking that we have enough samples
+    assert df.shape[0] > MIN_SAMPLES
+    # Checking that classes have at least BALANCE_THRESHOLD percent of data
+    assert (df["purchased"].value_counts() / df.shape[0] > BALANCE_THRESHOLD).all()
 
 def test_split_dataset():
 
