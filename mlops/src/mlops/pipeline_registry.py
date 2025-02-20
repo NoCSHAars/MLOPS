@@ -21,6 +21,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     p_deployment = deployment_pipeline.create_pipeline()
 
     return {
+        "__default__": Pipeline([p_loading, p_processing, p_training, p_deployment]),
         "global": Pipeline([p_loading, p_processing, p_training, p_deployment]),
         "loading": p_loading,
         "processing": p_processing,
