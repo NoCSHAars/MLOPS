@@ -1,3 +1,2 @@
-pip install --upgrade pip
-pip install -r requirements.txt
-kedro install
+uv pip install --upgrade pip
+uv pip install -r requirements.txt
