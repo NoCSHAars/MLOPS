@@ -9,6 +9,8 @@ from hyperopt import hp, tpe, fmin, Trials
 import warnings
 import os
 import mlflow
+from mlflow.models.signature import infer_signature
+from matplotlib import pyplot as plt
 
 warnings.filterwarnings("ignore")
 
@@ -98,13 +100,16 @@ def auto_ml(
     max_evals: int = 40,
     log_to_mlflow: bool = False,
     experiment_id: int = -1,
-) -> Dict:
+) -> BaseEstimator:
+
     X = pd.concat((X_train, X_test))
     y = pd.concat((y_train, y_test))
 
+    run_id = ""
     if log_to_mlflow:
         mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER"))
-        mlflow.start_run(experiment_id=experiment_id)
+        run = mlflow.start_run(experiment_id=experiment_id)
+        run_id = run.info.run_id
 
     opt_models = []
     for model_specs in MODELS:
@@ -127,4 +132,42 @@ def auto_ml(
             }
         )
 
-    return {"model": min(opt_models, key=lambda x: x["rmse"])["model"]}
+        # In case we have multiple models
+    best_model = max(opt_models, key=lambda x: x["rmse"])
+
+    if log_to_mlflow:
+        model_metrics = {"rmse": best_model["rmse"]}
+        signature = infer_signature(X_train, best_model["model"].predict(X_train))
+        plot_residuals(X_test, y_test, best_model["model"])
+
+        mlflow.log_metrics(model_metrics)
+        mlflow.log_params(best_model["params"])
+        # Only use if validation curves are produced
+        mlflow.log_artifacts("data/08_reporting", artifact_path="plots")
+        mlflow.sklearn.log_model(best_model["model"], "model", signature=signature)
+
+        mlflow.end_run()
+
+    return dict(model=best_model, mlflow_run_id=run_id)
+
+
+def plot_residuals(y_true, y_pred, model, filename="residuals.png"):
+    y_true = np.ravel(y_true)  # Ensure y_true is a 1D NumPy array
+    y_pred = np.ravel(y_pred)  # Ensure y_pred is a 1D NumPy array
+
+    residuals = y_true - y_pred  # Now subtraction will work
+
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_pred, residuals, alpha=0.5)
+    plt.axhline(y=0, color="r", linestyle="--")
+    plt.xlabel("Predicted Values")
+    plt.ylabel("Residuals")
+    plt.title(model["name"] + " : Residual Plot")
+
+    # Save and log to MLflow
+    filepath = os.path.join("mlflow_plots", filename)
+    os.makedirs("mlflow_plots", exist_ok=True)
+    plt.savefig(filepath)
+    plt.close()
+
+    mlflow.log_artifact(filepath, artifact_path="plots")

@@ -30,3 +30,6 @@ y_test:
 model:
   type: pickle.PickleDataset
   filepath: data/06_models/model.pkl
+
+mlflow_run_id:
+  type: MemoryDataset
