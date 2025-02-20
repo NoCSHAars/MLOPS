@@ -33,12 +33,8 @@ steps:
     fi
     gcloud config set project "$PROJECT_ID"
     
-    # Create the conf/local directory if it doesn't exist
     mkdir -p mlops/conf/local
-    
-    # Copy the service account file to the expected location
     cp service_account.json mlops/conf/local/service-account.json
-
     
     chmod a+x install.sh && ./install.sh && source .venv/bin/activate && cd mlops && kedro run
   env:
