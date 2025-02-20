@@ -1,13 +1,39 @@
+import numpy as np
 import pytest
 from mlops.src.mlops.pipelines.processing.nodes import encode_features, split_dataset
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
-MIN_SAMPLES = 100
 
+def test_encode_features():
 
-def test_encode_features(dataset_not_encoded):
-    df = encode_features(dataset_not_encoded)["features"]
-    assert df.shape[0] > MIN_SAMPLES
+    data = {
+        "Id": [1, 2, 3],
+        "LotShape": ["Reg", "IR1", "Reg"],
+        "LotFrontage": [65, 80, 68],
+        "LotArea": [8450, 9600, 11250],
+        "LotConfig": ["Inside", "FR2", "Corner"],
+        "SalePrice": [208500, 181500, 223500],
+    }
+    df = pd.DataFrame(data)
+
+    result = encode_features(df)
+    encoded_df = result["features"]
+    encoders = result["transform_pipeline"]
+
+    assert "Id" not in encoded_df.columns
+
+    assert encoded_df["LotShape"].dtype == np.int64
+    assert encoded_df["LotConfig"].dtype == np.int64
+
+    assert "LotConfig" in encoders
+    assert isinstance(encoders["LotShape"], LabelEncoder)
+
+    assert "LotShape" in encoders
+    assert isinstance(encoders["LotConfig"], LabelEncoder)
+
+    assert encoded_df["LotFrontage"].equals(df["LotFrontage"])
+    assert encoded_df["LotArea"].equals(df["LotArea"])
 
 
 def test_split_dataset():

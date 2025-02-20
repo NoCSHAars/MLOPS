@@ -26,5 +26,11 @@ def test_create_pipeline():
         "X_test",
         "y_test",
         "params:automl_max_evals",
+        "params:mlflow_enabled",  # Added missing input
+        "params:mlflow_experiment_id",  # Added missing input
     ]
-    assert test_node.outputs == ["model"]
+
+    assert test_node.outputs == [
+        "model",
+        "mlflow_run_id",
+    ]  # Updated output to match pipeline
