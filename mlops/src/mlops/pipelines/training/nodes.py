@@ -138,7 +138,7 @@ def auto_ml(
     if log_to_mlflow:
         model_metrics = {"rmse": best_model["rmse"]}
         signature = infer_signature(X_train, best_model["model"].predict(X_train))
-        plot_residuals(X_test, y_test, best_model["model"])
+        plot_residuals(y_test, best_model["model"].predict(X_test))
 
         mlflow.log_metrics(model_metrics)
         mlflow.log_params(best_model["params"])
@@ -151,7 +151,7 @@ def auto_ml(
     return dict(model=best_model, mlflow_run_id=run_id)
 
 
-def plot_residuals(y_true, y_pred, model, filename="residuals.png"):
+def plot_residuals(y_true, y_pred, filename="residuals.png"):
     y_true = np.ravel(y_true)  # Ensure y_true is a 1D NumPy array
     y_pred = np.ravel(y_pred)  # Ensure y_pred is a 1D NumPy array
 
@@ -162,7 +162,7 @@ def plot_residuals(y_true, y_pred, model, filename="residuals.png"):
     plt.axhline(y=0, color="r", linestyle="--")
     plt.xlabel("Predicted Values")
     plt.ylabel("Residuals")
-    plt.title(model["name"] + " : Residual Plot")
+    plt.title("Residual Plot")
 
     # Save and log to MLflow
     filepath = os.path.join("mlflow_plots", filename)
