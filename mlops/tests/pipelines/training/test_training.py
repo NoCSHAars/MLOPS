@@ -1,6 +1,11 @@
 from sklearn.metrics import mean_squared_error
 from lightgbm import LGBMRegressor
-from mlops.src.mlops.pipelines.training.nodes import train_model, optimize_hyp, auto_ml
+from mlops.src.mlops.pipelines.training.nodes import (
+    train_model,
+    optimize_hyp,
+    auto_ml,
+    evaluate_model,
+)
 from hyperopt import hp
 
 
@@ -15,7 +20,15 @@ def test_train_model(sample_data):
 
     preds = model.predict(X)
     assert len(preds) == len(y)
-    assert mean_squared_error(y, preds) >= 0  # RMSE cannot be negative
+
+    # Check multiple metrics
+    metrics = evaluate_model(y, preds)
+    assert "rmse" in metrics
+    assert "mae" in metrics
+    assert "r2" in metrics
+    assert metrics["rmse"] >= 0  # RMSE cannot be negative
+    assert metrics["mae"] >= 0  # MAE cannot be negative
+    assert -1 <= metrics["r2"] <= 1  # R2 should be between -1 and 1
 
 
 def test_optimize_hyp(sample_data):
@@ -48,4 +61,9 @@ def test_auto_ml(sample_data):
     assert "model" in result
     assert "mlflow_run_id" in result
     assert isinstance(result["model"], dict)
-    assert "rmse" in result["model"]
+    assert "rmse" in result["model"]["metrics"]
+    assert "mae" in result["model"]["metrics"]
+    assert "r2" in result["model"]["metrics"]
+    assert result["model"]["metrics"]["rmse"] >= 0  # RMSE cannot be negative
+    assert result["model"]["metrics"]["mae"] >= 0  # MAE cannot be negative
+    assert -1 <= result["model"]["metrics"]["r2"] <= 1  # R2 should be between -1 and 1
