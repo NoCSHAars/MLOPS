@@ -128,6 +128,7 @@ def auto_ml(
     y_train: np.ndarray,
     X_test: np.ndarray,
     y_test: np.ndarray,
+    dataset: np.ndarray,
     max_evals: int = 40,
     log_to_mlflow: bool = False,
     experiment_id: int = -1,
@@ -173,6 +174,13 @@ def auto_ml(
 
         mlflow.log_metrics(model_metrics)
         mlflow.log_params(best_model["params"])
+        X = dataset.drop("SalePrice", axis=1)
+        np.savetxt(
+            "data/08_reporting/predictions.csv",
+            best_model["model"].predict(X),
+            delimiter=",",
+        )
+        mlflow.log_artifact("data/08_reporting/predictions.csv")
         mlflow.log_artifacts("data/08_reporting", artifact_path="plots")
         mlflow.log_artifact("data/04_feature/transform_pipeline.pkl")
         mlflow.sklearn.log_model(best_model["model"], "model", signature=signature)

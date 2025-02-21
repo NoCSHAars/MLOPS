@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: housing-predict
+  labels:
+    app: housing-predict
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pod-housing-predict
+  template:
+    metadata:
+      labels:
+        app: pod-housing-predict
+    spec:
+      containers:
+      - name: pod-housing-predict
+        image: gcr.io/enhanced-kiln-451309-q8/purchase-predict-api:776a74a
+        env:
+        - name: PORT
+          value: "80"
+        - name: ENV
+          value: "staging"
+        - name: MLFLOW_SERVER
+          value: "http://35.189.225.250/"
+        - name: MLFLOW_REGISTRY_NAME
+          value: "housing_estimation"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "0.5G"
+            cpu: "0.5"
+          limits:
+            memory: "1G"
+            cpu: "1"
