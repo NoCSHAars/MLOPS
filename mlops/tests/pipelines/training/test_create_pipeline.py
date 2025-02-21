@@ -25,6 +25,7 @@ def test_create_pipeline():
         "y_train",
         "X_test",
         "y_test",
+        "dataset",
         "params:automl_max_evals",
         "params:mlflow_enabled",  # Added missing input
         "params:mlflow_experiment_id",  # Added missing input

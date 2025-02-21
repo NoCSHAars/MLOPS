@@ -40,7 +40,9 @@ def test_auto_ml(sample_data):
     X_train, X_test = X.iloc[:80], X.iloc[80:]
     y_train, y_test = y.iloc[:80], y.iloc[80:]
 
-    result = auto_ml(X_train, y_train, X_test, y_test, max_evals=2, log_to_mlflow=False)
+    result = auto_ml(
+        X_train, y_train, X_test, y_test, X, max_evals=2, log_to_mlflow=False
+    )
 
     assert isinstance(result, dict)
     assert "model" in result

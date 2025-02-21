@@ -13,6 +13,7 @@ def create_pipeline(**kwargs):
                     "y_train",
                     "X_test",
                     "y_test",
+                    "dataset",
                     "params:automl_max_evals",
                     "params:mlflow_enabled",
                     "params:mlflow_experiment_id",
