@@ -11,10 +11,41 @@ import os
 import mlflow
 from mlflow.models.signature import infer_signature
 from matplotlib import pyplot as plt
+from catboost import CatBoostRegressor
+
 
 warnings.filterwarnings("ignore")
 
 MODELS = [
+
+    {
+        
+
+
+        "name": "CatBoost Regressor",
+        "class": CatBoostRegressor,
+        "params": {
+            "loss_function": "RMSE",  # Équivalent à l'objectif 'regression' de LightGBM
+            "learning_rate": hp.uniform("learning_rate", 0.001, 0.5),
+            "iterations": hp.quniform("n_estimators", 100, 1000, 50),  # Équivalent à n_estimators
+            "depth": hp.quniform("max_depth", 4, 12, 1),  # Équivalent à max_depth
+            "l2_leaf_reg": hp.choice("reg_lambda", [0, 1e-1, 1, 2, 5, 10]),  # Équivalent à reg_lambda
+            "bagging_temperature": hp.uniform("subsample", 0.5, 1),  # Équivalent à subsample
+            
+            "border_count": hp.quniform("border_count", 8, 128, 10),  # Équivalent correct
+
+            "min_data_in_leaf": hp.quniform("min_child_samples", 1, 20, 1),  # Équivalent à min_child_samples
+            "verbose": 0  # Désactive les logs
+    },
+        "override_schemas": {
+        "depth": int,
+        "iterations": int,
+        "border_count": int,
+        "min_data_in_leaf": int,
+    },
+},
+
+    
     {
         "name": "LightGBM Regressor",
         "class": LGBMRegressor,
@@ -38,7 +69,7 @@ MODELS = [
             "max_depth": int,
             "n_estimators": int,
         },
-    }
+    },
 ]
 
 
