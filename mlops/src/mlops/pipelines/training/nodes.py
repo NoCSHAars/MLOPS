@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from typing import Callable, Tuple, Any, Dict
 from sklearn.base import BaseEstimator
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import KFold
 from lightgbm import LGBMRegressor
 from hyperopt import hp, tpe, fmin, Trials
@@ -17,35 +17,37 @@ from catboost import CatBoostRegressor
 warnings.filterwarnings("ignore")
 
 MODELS = [
-
     {
-        
-
-
         "name": "CatBoost Regressor",
         "class": CatBoostRegressor,
         "params": {
             "loss_function": "RMSE",  # Équivalent à l'objectif 'regression' de LightGBM
             "learning_rate": hp.uniform("learning_rate", 0.001, 0.5),
-            "iterations": hp.quniform("n_estimators", 100, 1000, 50),  # Équivalent à n_estimators
+            "iterations": hp.quniform(
+                "n_estimators", 100, 1000, 50
+            ),  # Équivalent à n_estimators
             "depth": hp.quniform("max_depth", 4, 12, 1),  # Équivalent à max_depth
-            "l2_leaf_reg": hp.choice("reg_lambda", [0, 1e-1, 1, 2, 5, 10]),  # Équivalent à reg_lambda
-            "bagging_temperature": hp.uniform("subsample", 0.5, 1),  # Équivalent à subsample
-            
-            "border_count": hp.quniform("border_count", 8, 128, 10),  # Équivalent correct
-
-            "min_data_in_leaf": hp.quniform("min_child_samples", 1, 20, 1),  # Équivalent à min_child_samples
-            "verbose": 0  # Désactive les logs
-    },
+            "l2_leaf_reg": hp.choice(
+                "reg_lambda", [0, 1e-1, 1, 2, 5, 10]
+            ),  # Équivalent à reg_lambda
+            "bagging_temperature": hp.uniform(
+                "subsample", 0.5, 1
+            ),  # Équivalent à subsample
+            "border_count": hp.quniform(
+                "border_count", 8, 128, 10
+            ),  # Équivalent correct
+            "min_data_in_leaf": hp.quniform(
+                "min_child_samples", 1, 20, 1
+            ),  # Équivalent à min_child_samples
+            "verbose": 0,  # Désactive les logs
+        },
         "override_schemas": {
-        "depth": int,
-        "iterations": int,
-        "border_count": int,
-        "min_data_in_leaf": int,
+            "depth": int,
+            "iterations": int,
+            "border_count": int,
+            "min_data_in_leaf": int,
+        },
     },
-},
-
-    
     {
         "name": "LightGBM Regressor",
         "class": LGBMRegressor,
@@ -71,6 +73,14 @@ MODELS = [
         },
     },
 ]
+
+
+def evaluate_model(y_true, y_pred):
+    return {
+        "rmse": np.sqrt(mean_squared_error(y_true, y_pred)),
+        "mae": mean_absolute_error(y_true, y_pred),
+        "r2": r2_score(y_true, y_pred),
+    }
 
 
 def train_model(
@@ -153,26 +163,25 @@ def auto_ml(
             max_evals=max_evals,
         )
         model = train_model(model_specs["class"], (X_train, y_train), optimum_params)
-        rmse = np.sqrt(mean_squared_error(y_test, model.predict(X_test)))
+        predictions = model.predict(X_test)
+        metrics = evaluate_model(y_test, predictions)
 
         opt_models.append(
             {
                 "model": model,
                 "name": model_specs["name"],
                 "params": optimum_params,
-                "rmse": rmse,
+                "metrics": metrics,
             }
         )
 
-        # In case we have multiple models
-    best_model = max(opt_models, key=lambda x: x["rmse"])
+    best_model = max(opt_models, key=lambda x: x["metrics"]["rmse"])
 
     if log_to_mlflow:
-        model_metrics = {"rmse": best_model["rmse"]}
         signature = infer_signature(X_train, best_model["model"].predict(X_train))
         plot_residuals(y_test, best_model["model"].predict(X_test))
 
-        mlflow.log_metrics(model_metrics)
+        mlflow.log_metrics(best_model["metrics"])
         mlflow.log_params(best_model["params"])
         X = dataset.drop("SalePrice", axis=1)
         np.savetxt(
