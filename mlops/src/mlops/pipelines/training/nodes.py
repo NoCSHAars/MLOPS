@@ -75,6 +75,30 @@ MODELS = [
             "n_estimators": int,
         },
     },
+    {
+        "name": "LightGBM Regressor",
+        "class": LGBMRegressor,
+        "params": {
+            "objective": "regression",
+            "metric": "rmse",
+            "verbose": -1,
+            "learning_rate": hp.uniform("learning_rate", 0.001, 0.5),
+            "n_estimators": hp.quniform("n_estimators", 100, 1000, 50),
+            "max_depth": hp.quniform("max_depth", 4, 12, 1),
+            "num_leaves": hp.quniform("num_leaves", 8, 128, 10),
+            "colsample_bytree": hp.uniform("colsample_bytree", 0.3, 1),
+            "subsample": hp.uniform("subsample", 0.5, 1),
+            "min_child_samples": hp.quniform("min_child_samples", 1, 20, 1),
+            "reg_alpha": hp.choice("reg_alpha", [0, 1e-1, 1, 2, 5, 10]),
+            "reg_lambda": hp.choice("reg_lambda", [0, 1e-1, 1, 2, 5, 10]),
+        },
+        "override_schemas": {
+            "num_leaves": int,
+            "min_child_samples": int,
+            "max_depth": int,
+            "n_estimators": int,
+        },
+    },
 ]
 
 
