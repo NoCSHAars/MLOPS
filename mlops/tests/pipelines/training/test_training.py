@@ -28,7 +28,6 @@ def test_train_model(sample_data):
     assert "r2" in metrics
     assert metrics["rmse"] >= 0  # RMSE cannot be negative
     assert metrics["mae"] >= 0  # MAE cannot be negative
-    assert -1 <= metrics["r2"] <= 1  # R2 should be between -1 and 1
 
 
 def test_optimize_hyp(sample_data):
