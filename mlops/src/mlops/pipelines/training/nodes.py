@@ -11,13 +11,13 @@ import os
 import mlflow
 from mlflow.models.signature import infer_signature
 from matplotlib import pyplot as plt
-from catboost import CatBoostRegressor
+
+# from catboost import CatBoostRegressor
 
 
 warnings.filterwarnings("ignore")
 
-MODELS = [
-    {
+"""    {
         "name": "CatBoost Regressor",
         "class": CatBoostRegressor,
         "params": {
@@ -48,6 +48,9 @@ MODELS = [
             "min_data_in_leaf": int,
         },
     },
+"""
+
+MODELS = [
     {
         "name": "LightGBM Regressor",
         "class": LGBMRegressor,
